@@ -918,6 +918,12 @@ function applyTheme(theme) {
   }
 }
 
+function enterApp() {
+  const landing = document.getElementById('landing-screen');
+  landing.classList.add('hide');
+  setTimeout(() => landing.remove(), 500);
+}
+
 function toggleTheme() {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   applyTheme(isDark ? 'light' : 'dark');
