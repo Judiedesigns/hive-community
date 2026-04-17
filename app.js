@@ -274,7 +274,7 @@ function renderPostCard(p) {
     </div>
 
     <div class="post-actions">
-      <button class="post-action like-btn ${p.liked?'liked':''}" onclick="toggleLike(${p.id})">
+      <button class="post-action like-btn ${p.liked?'liked':''}" onclick="toggleLike(${p.id},this)">
         ${likeIcon} <span class="post-action-label">${fmtNum(p.likes)}</span>
       </button>
       <button class="post-action comment-btn" onclick="toggleComments(${p.id})">
@@ -285,7 +285,7 @@ function renderPostCard(p) {
         <i class="iconoir-repeat" style="font-size:16px"></i>
         <span class="post-action-label">${fmtNum(p.shares)}</span>
       </button>
-      <button class="post-action bookmark-btn ${p.bookmarked?'bookmarked':''}" onclick="toggleBookmark(${p.id})" style="margin-left:auto">
+      <button class="post-action bookmark-btn ${p.bookmarked?'bookmarked':''}" onclick="toggleBookmark(${p.id},this)" style="margin-left:auto">
         ${bookmarkIcon}
       </button>
     </div>
@@ -313,18 +313,20 @@ function renderPostCard(p) {
 }
 
 /* ─── INTERACTIONS ──────────────────────────────────── */
-function toggleLike(id) {
+function toggleLike(id, btn) {
   const p = posts.find(x => x.id === id);
   if (!p) return;
   p.liked = !p.liked;
   p.likes += p.liked ? 1 : -1;
+  if (btn) { btn.classList.add('like-animate'); btn.addEventListener('animationend', () => btn.classList.remove('like-animate'), { once: true }); }
   renderFeed();
 }
 
-function toggleBookmark(id) {
+function toggleBookmark(id, btn) {
   const p = posts.find(x => x.id === id);
   if (!p) return;
   p.bookmarked = !p.bookmarked;
+  if (btn) { btn.classList.add('bookmark-animate'); btn.addEventListener('animationend', () => btn.classList.remove('bookmark-animate'), { once: true }); }
   renderFeed();
   showToast(p.bookmarked ? 'Saved to bookmarks' : 'Removed from saved');
 }
@@ -904,17 +906,20 @@ function applyTheme(theme) {
   const sun = document.getElementById('theme-sun');
   const moon = document.getElementById('theme-moon');
   const label = document.getElementById('theme-label');
-  const mIcon = document.getElementById('mobile-theme-icon');
+  const mSun = document.getElementById('mobile-theme-sun');
+  const mMoon = document.getElementById('mobile-theme-moon');
   if (theme === 'dark') {
     if (sun) sun.style.display = 'none';
     if (moon) moon.style.display = 'block';
     if (label) label.textContent = 'Dark mode';
-    if (mIcon) mIcon.textContent = '🌙';
+    if (mSun) mSun.style.display = 'none';
+    if (mMoon) mMoon.style.display = 'block';
   } else {
     if (sun) sun.style.display = 'block';
     if (moon) moon.style.display = 'none';
     if (label) label.textContent = 'Light mode';
-    if (mIcon) mIcon.textContent = '☀️';
+    if (mSun) mSun.style.display = 'block';
+    if (mMoon) mMoon.style.display = 'none';
   }
 }
 
