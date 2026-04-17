@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hive — Community Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ────────────────────────────────────────────── */
+:root {
+  --bg:          #F7F7F5;
+  --surface:     #FFFFFF;
+  --surface-2:   #FAFAF8;
+  --border:      #E8E8E4;
+  --text-1:      #1A1A1A;
+  --text-2:      #666660;
+  --text-3:      #9999A0;
+  --accent:      #FF6B35;
+  --accent-h:    #FF8555;
+  --accent-soft: #FFF0EB;
+  --success:     #22C55E;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-full: 9999px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,.10), 0 4px 8px rgba(0,0,0,.06);
+  --sidebar-w: 260px;
+  --rsidebar-w: 300px;
+  --transition: 0.2s ease;
+}
+[data-theme="dark"] {
+  --bg:          #0D0D0D;
+  --surface:     #1A1A1A;
+  --surface-2:   #1F1F1F;
+  --border:      #2E2E2E;
+  --text-1:      #F0F0EE;
+  --text-2:      #A0A09A;
+  --text-3:      #606065;
+  --accent:      #FF6B35;
+  --accent-h:    #FF8555;
+  --accent-soft: #2A1A12;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.4);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,.5);
+}
+
+/* ── RESET ─────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text-1);
+  line-height: 1.5;
+  transition: background var(--transition), color var(--transition);
+  min-height: 100vh;
+}
+a { text-decoration: none; color: inherit; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+img { display: block; max-width: 100%; }
+input, textarea { font-family: inherit; }
+ul { list-style: none; }
+svg { display: block; flex-shrink: 0; }
+
+/* ── LAYOUT ────────────────────────────────────────────── */
+.app {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr var(--rsidebar-w);
+  min-height: 100vh;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* ── LEFT SIDEBAR ──────────────────────────────────────── */
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  transition: background var(--transition), border-color var(--transition);
+}
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px;
+  margin-bottom: 24px;
+}
+.logo-mark {
+  width: 36px;
+  height: 36px;
+  background: var(--accent);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.logo-text {
+  font-family: 'DM Serif Display', serif;
+  font-size: 22px;
+  letter-spacing: -0.5px;
+  color: var(--text-1);
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px;
+  border-radius: var(--r-md);
+  color: var(--text-2);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+.nav-item:hover { background: var(--surface-2); color: var(--text-1); }
+.nav-item.active { background: var(--accent-soft); color: var(--accent); }
+.nav-item .badge {
+  margin-left: auto;
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: var(--r-full);
+  min-width: 20px;
+  text-align: center;
+}
+.sidebar-spacer { flex: 1; }
+.new-post-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: var(--r-md);
+  font-size: 15px;
+  font-weight: 600;
+  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+  box-shadow: 0 2px 8px rgba(255,107,53,.3);
+  margin-bottom: 16px;
+}
+.new-post-btn:hover {
+  background: var(--accent-h);
+  box-shadow: 0 4px 16px rgba(255,107,53,.4);
+  transform: translateY(-1px);
+}
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--r-md);
+  color: var(--text-3);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+  width: 100%;
+}
+.theme-toggle:hover { background: var(--surface-2); color: var(--text-2); }
+.toggle-track {
+  margin-left: auto;
+  width: 40px;
+  height: 22px;
+  background: var(--border);
+  border-radius: var(--r-full);
+  position: relative;
+  transition: background var(--transition);
+}
+[data-theme="dark"] .toggle-track { background: var(--accent); }
+.toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform var(--transition);
+  box-shadow: 0 1px 3px rgba(0,0,0,.2);
+}
+[data-theme="dark"] .toggle-thumb { transform: translateX(18px); }
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 8px;
+  border-radius: var(--r-md);
+  cursor: pointer;
+  margin-top: 4px;
+  transition: background var(--transition);
+}
+.sidebar-user:hover { background: var(--surface-2); }
+.sidebar-user-info { flex: 1; min-width: 0; }
+.sidebar-user-name { font-size: 14px; font-weight: 600; color: var(--text-1); }
+.sidebar-user-handle { font-size: 12px; color: var(--text-3); }
+
+/* ── MAIN ──────────────────────────────────────────────── */
+.main {
+  border-right: 1px solid var(--border);
+  transition: border-color var(--transition);
+  min-height: 100vh;
+}
+.main-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(247,247,245,0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background var(--transition), border-color var(--transition);
+}
+[data-theme="dark"] .main-header {
+  background: rgba(13,13,13,0.85);
+}
+.main-header h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 20px;
+  letter-spacing: -0.3px;
+}
+.main-content { padding: 0; }
+
+/* ── SCREENS ───────────────────────────────────────────── */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* ── COMPOSER ──────────────────────────────────────────── */
+.composer {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 14px;
+  transition: border-color var(--transition);
+}
+.composer-body { flex: 1; }
+.composer textarea {
+  width: 100%;
+  resize: none;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  color: var(--text-1);
+  outline: none;
+  min-height: 56px;
+  line-height: 1.6;
+}
+.composer textarea::placeholder { color: var(--text-3); }
+.composer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.composer-actions { display: flex; gap: 4px; }
+.composer-action {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-sm);
+  color: var(--text-3);
+  transition: background var(--transition), color var(--transition);
+}
+.composer-action:hover { background: var(--accent-soft); color: var(--accent); }
+.post-btn {
+  background: var(--accent);
+  color: #fff;
+  padding: 8px 22px;
+  border-radius: var(--r-full);
+  font-size: 14px;
+  font-weight: 600;
+  transition: background var(--transition), transform var(--transition);
+}
+.post-btn:hover { background: var(--accent-h); transform: scale(1.02); }
+.post-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+.char-count { font-size: 12px; color: var(--text-3); }
+
+/* ── POST CARD ─────────────────────────────────────────── */
+.post-card {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 14px;
+  transition: background var(--transition), border-color var(--transition);
+  animation: fadeSlide 0.3s ease;
+}
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.post-card:hover { background: var(--surface-2); }
+.post-body { flex: 1; min-width: 0; }
+.post-header {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+.post-name { font-size: 15px; font-weight: 600; color: var(--text-1); }
+.post-handle { font-size: 14px; color: var(--text-3); }
+.post-dot { color: var(--text-3); font-size: 14px; }
+.post-time { font-size: 13px; color: var(--text-3); }
+.post-content { font-size: 15px; color: var(--text-1); line-height: 1.6; margin-bottom: 14px; }
+.post-actions {
+  display: flex;
+  gap: 0;
+  margin-top: 4px;
+}
+.post-action {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: var(--r-full);
+  color: var(--text-3);
+  font-size: 13px;
+  font-weight: 500;
+  transition: all var(--transition);
+  min-width: 60px;
+}
+.post-action:hover { background: var(--accent-soft); color: var(--accent); }
+.post-action.liked { color: #E03535; }
+.post-action.liked:hover { background: #FFF0F0; color: #E03535; }
+.post-action.liked svg { fill: #E03535; }
+.post-action.bookmarked { color: var(--accent); }
+.post-action:last-child { margin-left: auto; min-width: auto; }
+
+/* Comments inline */
+.comments-section {
+  display: none;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.comments-section.open { display: block; }
+.comment-item {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.comment-body { flex: 1; }
+.comment-header { display: flex; align-items: baseline; gap: 6px; margin-bottom: 3px; }
+.comment-name { font-size: 13px; font-weight: 600; }
+.comment-time { font-size: 12px; color: var(--text-3); }
+.comment-text { font-size: 14px; color: var(--text-2); line-height: 1.5; }
+.comment-input-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  align-items: center;
+}
+.comment-input {
+  flex: 1;
+  padding: 8px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-full);
+  font-size: 14px;
+  color: var(--text-1);
+  outline: none;
+  transition: border-color var(--transition), background var(--transition);
+}
+.comment-input:focus { border-color: var(--accent); }
+.comment-input::placeholder { color: var(--text-3); }
+.comment-submit {
+  padding: 8px 16px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: var(--r-full);
+  font-size: 13px;
+  font-weight: 600;
+  transition: background var(--transition);
+}
+.comment-submit:hover { background: var(--accent-h); }
+
+/* ── AVATAR ────────────────────────────────────────────── */
+.avatar {
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #fff;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+.avatar-40 { width: 40px; height: 40px; }
+.avatar-48 { width: 48px; height: 48px; font-size: 16px; }
+.avatar-96 { width: 96px; height: 96px; font-size: 28px; }
+.avatar-32 { width: 32px; height: 32px; font-size: 11px; }
+
+/* ── RIGHT SIDEBAR ─────────────────────────────────────── */
+.rsidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 24px 20px;
+  scrollbar-width: none;
+}
+.rsidebar::-webkit-scrollbar { display: none; }
+.rsidebar-section {
+  background: var(--surface-2);
+  border-radius: var(--r-lg);
+  padding: 18px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border);
+  transition: background var(--transition), border-color var(--transition);
+}
+.rsidebar-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 17px;
+  color: var(--text-1);
+  margin-bottom: 16px;
+}
+.suggest-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.suggest-user:last-of-type { margin-bottom: 0; }
+.suggest-info { flex: 1; min-width: 0; }
+.suggest-name { font-size: 14px; font-weight: 600; color: var(--text-1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.suggest-handle { font-size: 12px; color: var(--text-3); }
+.follow-btn {
+  padding: 6px 16px;
+  border-radius: var(--r-full);
+  font-size: 13px;
+  font-weight: 600;
+  border: 1.5px solid var(--accent);
+  color: var(--accent);
+  background: transparent;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+.follow-btn:hover { background: var(--accent); color: #fff; }
+.follow-btn.following {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: transparent;
+}
+.trending-item {
+  margin-bottom: 14px;
+  cursor: pointer;
+  padding: 6px 0;
+  border-radius: var(--r-sm);
+  transition: color var(--transition);
+}
+.trending-item:hover .trending-tag { color: var(--accent); }
+.trending-cat { font-size: 11px; color: var(--text-3); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+.trending-tag { font-size: 15px; font-weight: 600; color: var(--text-1); margin: 2px 0; transition: color var(--transition); }
+.trending-count { font-size: 12px; color: var(--text-3); }
+
+/* ── PROFILE SCREEN ────────────────────────────────────── */
+.profile-cover {
+  height: 180px;
+  background: linear-gradient(135deg, #FF6B35 0%, #FF9A6C 50%, #FFD4B8 100%);
+  position: relative;
+}
+[data-theme="dark"] .profile-cover {
+  background: linear-gradient(135deg, #7B2D14 0%, #B34A25 50%, #FF6B35 100%);
+}
+.profile-info {
+  padding: 0 24px 24px;
+}
+.profile-avatar-wrap {
+  margin-top: -48px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.profile-avatar-border {
+  padding: 4px;
+  background: var(--surface);
+  border-radius: 50%;
+  transition: background var(--transition);
+  box-shadow: var(--shadow-md);
+}
+.edit-profile-btn {
+  padding: 8px 20px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-full);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-1);
+  background: transparent;
+  transition: all var(--transition);
+  margin-bottom: 8px;
+}
+.edit-profile-btn:hover { border-color: var(--accent); color: var(--accent); }
+.profile-name { font-size: 22px; font-weight: 700; color: var(--text-1); margin-bottom: 2px; }
+.profile-handle { font-size: 15px; color: var(--text-3); margin-bottom: 10px; }
+.profile-bio { font-size: 15px; color: var(--text-2); line-height: 1.6; margin-bottom: 14px; }
+.profile-meta { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+.profile-meta-item { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--text-3); }
+.profile-stats { display: flex; gap: 24px; }
+.stat-item { cursor: pointer; }
+.stat-item:hover .stat-label { color: var(--accent); }
+.stat-num { font-size: 16px; font-weight: 700; color: var(--text-1); }
+.stat-label { font-size: 14px; color: var(--text-3); transition: color var(--transition); }
+.profile-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  transition: border-color var(--transition);
+}
+.profile-tab {
+  padding: 14px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-3);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all var(--transition);
+  margin-bottom: -1px;
+}
+.profile-tab.active { color: var(--text-1); border-bottom-color: var(--accent); font-weight: 600; }
+.profile-posts { padding: 8px 0; }
+
+/* ── DISCOVER SCREEN ───────────────────────────────────── */
+.discover-search {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  transition: border-color var(--transition);
+}
+.search-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.search-input-wrap svg {
+  position: absolute;
+  left: 14px;
+  color: var(--text-3);
+  pointer-events: none;
+}
+.search-input {
+  width: 100%;
+  padding: 12px 16px 12px 44px;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-full);
+  font-size: 15px;
+  color: var(--text-1);
+  outline: none;
+  transition: all var(--transition);
+}
+.search-input:focus { border-color: var(--accent); background: var(--surface); }
+.search-input::placeholder { color: var(--text-3); }
+.discover-grid {
+  padding: 24px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+.user-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 20px;
+  text-align: center;
+  transition: all var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+.user-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); border-color: var(--accent); }
+.user-card .avatar { margin: 0 auto 12px; }
+.user-card-name { font-size: 15px; font-weight: 700; color: var(--text-1); margin-bottom: 2px; }
+.user-card-handle { font-size: 13px; color: var(--text-3); margin-bottom: 8px; }
+.user-card-bio { font-size: 13px; color: var(--text-2); margin-bottom: 16px; line-height: 1.5; }
+.user-card-stats { display: flex; justify-content: center; gap: 20px; margin-bottom: 16px; }
+.user-card-stat-num { font-size: 15px; font-weight: 700; color: var(--text-1); }
+.user-card-stat-label { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.3px; }
+.user-card .follow-btn { width: 100%; justify-content: center; display: block; }
+
+/* ── SINGLE POST SCREEN ────────────────────────────────── */
+.single-post-back {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 24px;
+  color: var(--text-2);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: color var(--transition), border-color var(--transition);
+}
+.single-post-back:hover { color: var(--accent); }
+.single-post-body { padding: 20px 24px; border-bottom: 1px solid var(--border); }
+.single-post-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.single-post-user-info .name { font-size: 16px; font-weight: 700; }
+.single-post-user-info .handle { font-size: 14px; color: var(--text-3); }
+.single-post-content { font-size: 20px; line-height: 1.6; color: var(--text-1); margin-bottom: 16px; }
+.single-post-time { font-size: 14px; color: var(--text-3); margin-bottom: 16px; }
+.single-post-stats {
+  display: flex;
+  gap: 20px;
+  padding: 14px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+.single-stat { font-size: 15px; color: var(--text-2); }
+.single-stat strong { color: var(--text-1); }
+.single-post-actions { display: flex; gap: 0; padding: 4px 0; }
+.comments-list { padding: 0 24px; }
+.comment-card {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 12px;
+  transition: border-color var(--transition);
+}
+.reply-composer {
+  padding: 16px 24px;
+  display: flex;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+  transition: border-color var(--transition);
+}
+.reply-composer textarea {
+  flex: 1;
+  padding: 10px 14px;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-lg);
+  font-size: 15px;
+  color: var(--text-1);
+  outline: none;
+  resize: none;
+  min-height: 52px;
+  transition: border-color var(--transition), background var(--transition);
+}
+.reply-composer textarea:focus { border-color: var(--accent); }
+.reply-composer textarea::placeholder { color: var(--text-3); }
+.reply-btn {
+  align-self: flex-end;
+  padding: 10px 20px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: var(--r-full);
+  font-size: 14px;
+  font-weight: 600;
+  transition: background var(--transition);
+}
+.reply-btn:hover { background: var(--accent-h); }
+
+/* ── NOTIFICATIONS DOT ─────────────────────────────────── */
+.notif-screen { padding: 24px; }
+.notif-item {
+  display: flex;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  transition: border-color var(--transition);
+}
+.notif-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.notif-icon.like { background: #FFF0F0; color: #E03535; }
+.notif-icon.follow { background: var(--accent-soft); color: var(--accent); }
+.notif-icon.comment { background: #EFF6FF; color: #3B82F6; }
+[data-theme="dark"] .notif-icon.like { background: #2A1212; }
+[data-theme="dark"] .notif-icon.comment { background: #0F1F35; color: #60A5FA; }
+.notif-text { flex: 1; font-size: 14px; color: var(--text-2); line-height: 1.5; }
+.notif-text strong { color: var(--text-1); }
+.notif-time { font-size: 12px; color: var(--text-3); }
+.unread-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+/* ── MOBILE ────────────────────────────────────────────── */
+.mobile-header { display: none; }
+.mobile-tab-bar { display: none; }
+
+@media (max-width: 1100px) {
+  .app { grid-template-columns: var(--sidebar-w) 1fr; }
+  .rsidebar { display: none; }
+}
+@media (max-width: 720px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .mobile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+  .mobile-tab-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 10px 0 max(10px, env(safe-area-inset-bottom));
+    z-index: 30;
+  }
+  .mobile-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    color: var(--text-3);
+    font-size: 11px;
+    cursor: pointer;
+    transition: color var(--transition);
+  }
+  .mobile-tab.active { color: var(--accent); }
+  .main { padding-bottom: 60px; }
+  .discover-grid { grid-template-columns: 1fr; }
+}
+
+/* ── UTILS ─────────────────────────────────────────────── */
+.divider { height: 1px; background: var(--border); margin: 0; transition: background var(--transition); }
+.empty-state { text-align: center; padding: 60px 24px; color: var(--text-3); font-size: 15px; }
+.see-more { display: block; padding: 14px; text-align: center; font-size: 14px; color: var(--accent); font-weight: 500; cursor: pointer; }
+.see-more:hover { background: var(--accent-soft); }
+</style>
+</head>
+<body>
+
+<!-- MOBILE HEADER -->
+<div class="mobile-header">
+  <div class="sidebar-logo" style="margin:0">
+    <div class="logo-mark">
+      <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" fill="white"/></svg>
+    </div>
+    <span class="logo-text">Hive</span>
+  </div>
+  <button class="theme-toggle" onclick="toggleTheme()" style="width:auto;padding:8px 12px">
+    <span id="mobile-theme-icon">☀️</span>
+  </button>
+</div>
+
+<div class="app">
+  <!-- ── LEFT SIDEBAR ── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" fill="white"/></svg>
+      </div>
+      <span class="logo-text">Hive</span>
+    </div>
+
+    <button class="nav-item active" data-nav="feed" onclick="switchScreen('feed')">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+      Feed
+    </button>
+    <button class="nav-item" data-nav="discover" onclick="switchScreen('discover')">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Discover
+    </button>
+    <button class="nav-item" data-nav="profile" onclick="switchScreen('profile')">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Profile
+    </button>
+    <button class="nav-item" data-nav="notifications" onclick="switchScreen('notifications')">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      Notifications
+      <span class="badge">3</span>
+    </button>
+
+    <div class="sidebar-spacer"></div>
+
+    <button class="new-post-btn" onclick="focusComposer()">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New Post
+    </button>
+
+    <button class="theme-toggle" onclick="toggleTheme()">
+      <svg id="theme-sun" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      <svg id="theme-moon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:none"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      <span id="theme-label">Light mode</span>
+      <div class="toggle-track"><div class="toggle-thumb"></div></div>
+    </button>
+
+    <div class="sidebar-user" onclick="switchScreen('profile')">
+      <div class="avatar avatar-40" style="background: linear-gradient(135deg,#FF6B35,#FF9A6C)">FO</div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name">Florence Osei</div>
+        <div class="sidebar-user-handle">@florence</div>
+      </div>
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+    </div>
+  </aside>
+
+  <!-- ── MAIN CONTENT ── -->
+  <main class="main">
+
+    <!-- FEED SCREEN -->
+    <div id="screen-feed" class="screen active">
+      <div class="main-header">
+        <h1>Feed</h1>
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:var(--text-3)"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      </div>
+
+      <!-- Composer -->
+      <div class="composer">
+        <div class="avatar avatar-40" style="background: linear-gradient(135deg,#FF6B35,#FF9A6C)">FO</div>
+        <div class="composer-body">
+          <textarea id="composer-textarea" placeholder="What's on your mind?" rows="2" oninput="updateComposer(this)"></textarea>
+          <div class="composer-footer">
+            <div class="composer-actions">
+              <button class="composer-action" title="Image">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+              </button>
+              <button class="composer-action" title="Link">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+              </button>
+              <button class="composer-action" title="Emoji">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+              </button>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <span class="char-count" id="char-count">0 / 280</span>
+              <button class="post-btn" id="post-btn" onclick="submitPost()" disabled>Post</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feed Posts -->
+      <div id="feed-list">
+        <!-- Posts rendered by JS -->
+      </div>
+    </div>
+
+    <!-- DISCOVER SCREEN -->
+    <div id="screen-discover" class="screen">
+      <div class="main-header">
+        <h1>Discover</h1>
+      </div>
+      <div class="discover-search">
+        <div class="search-input-wrap">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" class="search-input" placeholder="Search people, topics..." oninput="filterUsers(this.value)">
+        </div>
+      </div>
+      <div class="discover-grid" id="discover-grid">
+        <!-- Users rendered by JS -->
+      </div>
+    </div>
+
+    <!-- PROFILE SCREEN -->
+    <div id="screen-profile" class="screen">
+      <div class="profile-cover"></div>
+      <div class="profile-info">
+        <div class="profile-avatar-wrap">
+          <div class="profile-avatar-border">
+            <div class="avatar avatar-96" style="background: linear-gradient(135deg,#FF6B35,#FF9A6C)">FO</div>
+          </div>
+          <button class="edit-profile-btn">Edit Profile</button>
+        </div>
+        <div class="profile-name">Florence Osei</div>
+        <div class="profile-handle">@florence · Joined March 2024</div>
+        <div class="profile-bio">Product designer & community builder. Passionate about fintech for Africa 🌍. Building things at the intersection of design and impact.</div>
+        <div class="profile-meta">
+          <span class="profile-meta-item">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Accra, Ghana
+          </span>
+          <span class="profile-meta-item">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+            florence.design
+          </span>
+        </div>
+        <div class="profile-stats">
+          <div class="stat-item">
+            <div class="stat-num">284</div>
+            <div class="stat-label">Posts</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">4.2K</div>
+            <div class="stat-label">Followers</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">318</div>
+            <div class="stat-label">Following</div>
+          </div>
+        </div>
+      </div>
+      <div class="profile-tabs">
+        <div class="profile-tab active">Posts</div>
+        <div class="profile-tab">Replies</div>
+        <div class="profile-tab">Likes</div>
+      </div>
+      <div class="profile-posts" id="profile-posts">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+
+    <!-- NOTIFICATIONS SCREEN -->
+    <div id="screen-notifications" class="screen">
+      <div class="main-header">
+        <h1>Notifications</h1>
+      </div>
+      <div class="notif-screen" id="notif-list">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+
+    <!-- SINGLE POST SCREEN -->
+    <div id="screen-single" class="screen">
+      <div class="main-header">
+        <h1>Post</h1>
+      </div>
+      <div class="single-post-back" onclick="switchScreen('feed')">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
+        Back to Feed
+      </div>
+      <div id="single-post-content"></div>
+    </div>
+
+  </main>
+
+  <!-- ── RIGHT SIDEBAR ── -->
+  <aside class="rsidebar">
+    <!-- Who to Follow -->
+    <div class="rsidebar-section">
+      <div class="rsidebar-title">Who to Follow</div>
+      <div id="rsidebar-suggestions"></div>
+      <span class="see-more">Show more</span>
+    </div>
+
+    <!-- Trending -->
+    <div class="rsidebar-section">
+      <div class="rsidebar-title">Trending</div>
+      <div class="trending-item">
+        <div class="trending-cat">Design · Trending</div>
+        <div class="trending-tag">#AfricanDesign</div>
+        <div class="trending-count">2,841 posts</div>
+      </div>
+      <div class="trending-item">
+        <div class="trending-cat">Fintech · Trending</div>
+        <div class="trending-tag">#MobilePayments</div>
+        <div class="trending-count">1,203 posts</div>
+      </div>
+      <div class="trending-item">
+        <div class="trending-cat">Tech · Trending</div>
+        <div class="trending-tag">#BuildInPublic</div>
+        <div class="trending-count">8,590 posts</div>
+      </div>
+      <div class="trending-item">
+        <div class="trending-cat">Community</div>
+        <div class="trending-tag">#HiveCreators</div>
+        <div class="trending-count">540 posts</div>
+      </div>
+      <span class="see-more">Show more</span>
+    </div>
+
+    <!-- Footer -->
+    <div style="padding: 8px 4px; font-size: 12px; color: var(--text-3); line-height: 1.8;">
+      Terms · Privacy · Cookies<br>
+      Accessibility · Ads info<br>
+      © 2026 Hive
+    </div>
+  </aside>
+</div>
+
+<!-- MOBILE TAB BAR -->
+<nav class="mobile-tab-bar">
+  <div class="mobile-tab active" data-nav="feed" onclick="switchScreen('feed')">
+    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+    Feed
+  </div>
+  <div class="mobile-tab" data-nav="discover" onclick="switchScreen('discover')">
+    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    Discover
+  </div>
+  <div class="mobile-tab" data-nav="profile" onclick="switchScreen('profile')">
+    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Profile
+  </div>
+  <div class="mobile-tab" data-nav="notifications" onclick="switchScreen('notifications')">
+    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+    Notifs
+  </div>
+</nav>
+
+<script>
+/* ─── DATA ──────────────────────────────────────────── */
+const GRADIENT_PALETTES = [
+  'linear-gradient(135deg,#FF6B35,#FF9A6C)',
+  'linear-gradient(135deg,#6366F1,#8B5CF6)',
+  'linear-gradient(135deg,#10B981,#34D399)',
+  'linear-gradient(135deg,#F59E0B,#FBBF24)',
+  'linear-gradient(135deg,#EF4444,#F87171)',
+  'linear-gradient(135deg,#3B82F6,#60A5FA)',
+  'linear-gradient(135deg,#EC4899,#F472B6)',
+  'linear-gradient(135deg,#14B8A6,#2DD4BF)',
+];
+
+const USERS = [
+  { id:1, name:'Kofi Mensah', handle:'@kofi_builds', bio:'Full-stack dev building SaaS for emerging markets 🚀', followers:3200, following:280, gradient:GRADIENT_PALETTES[1], initials:'KM' },
+  { id:2, name:'Aisha Diallo', handle:'@aisha_ux', bio:'UX researcher obsessed with inclusive design across the continent 🎨', followers:8100, following:410, gradient:GRADIENT_PALETTES[6], initials:'AD' },
+  { id:3, name:'Emeka Obi', handle:'@emeka_tech', bio:'Founder @ Paystream. We make cross-border payments simple 💳', followers:12400, following:550, gradient:GRADIENT_PALETTES[4], initials:'EO' },
+  { id:4, name:'Zara Nkosi', handle:'@zaranko', bio:'Photographer + storyteller. Documenting African urbanism 📷', followers:5600, following:320, gradient:GRADIENT_PALETTES[5], initials:'ZN' },
+  { id:5, name:'Amara Toure', handle:'@amara_builds', bio:'iOS dev & open source contributor. Swahili & French 🌿', followers:2100, following:190, gradient:GRADIENT_PALETTES[2], initials:'AT' },
+  { id:6, name:'Seun Adeyemi', handle:'@seun_finance', bio:'Fintech analyst & newsletter writer. Lagos → London 📊', followers:6800, following:440, gradient:GRADIENT_PALETTES[3], initials:'SA' },
+  { id:7, name:'Fatima Hassan', handle:'@fatima_codes', bio:'Backend engineer. I write about distributed systems ⚡', followers:4400, following:260, gradient:GRADIENT_PALETTES[7], initials:'FH' },
+  { id:8, name:'David Kamau', handle:'@dkamau', bio:'Product manager at a Series B startup. Nairobi 🦁', followers:9200, following:620, gradient:GRADIENT_PALETTES[0], initials:'DK' },
+];
+
+const POSTS = [
+  {
+    id:1, userId:3, name:'Emeka Obi', handle:'@emeka_tech', initials:'EO', gradient:GRADIENT_PALETTES[4],
+    content:'Just closed our seed round! 🎉 Cross-border payments in Africa shouldn\'t cost 8%. We\'re bringing that down to under 1%. Grateful for every early believer who saw the vision. The real work starts now.',
+    time:'2h', likes:284, comments:42, shares:91, bookmarks:67, liked:false, bookmarked:false
+  },
+  {
+    id:2, userId:2, name:'Aisha Diallo', handle:'@aisha_ux', initials:'AD', gradient:GRADIENT_PALETTES[6],
+    content:'Hot take: most "inclusive design" research still centers Western users. If your user interviews don\'t include someone who primarily uses mobile data with under 2GB/month, you\'re building for a fraction of the world.',
+    time:'4h', likes:512, comments:88, shares:204, bookmarks:143, liked:true, bookmarked:false
+  },
+  {
+    id:3, userId:1, name:'Kofi Mensah', handle:'@kofi_builds', initials:'KM', gradient:GRADIENT_PALETTES[1],
+    content:'Built a side project this weekend: a simple expense splitter that works via SMS. No app install, no internet. Tested it in areas with patchy coverage. Worked perfectly. Sometimes constraints are the best design brief. 🔧',
+    time:'6h', likes:178, comments:31, shares:55, bookmarks:89, liked:false, bookmarked:true
+  },
+  {
+    id:4, userId:4, name:'Zara Nkosi', handle:'@zaranko', initials:'ZN', gradient:GRADIENT_PALETTES[5],
+    content:'New photo essay dropping this week: "City of Light" — 90 nights documenting Lagos from dusk to dawn. This city never sleeps, and neither did I. Here\'s a teaser 🌃✨',
+    time:'9h', likes:921, comments:156, shares:340, bookmarks:278, liked:false, bookmarked:false
+  },
+  {
+    id:5, userId:6, name:'Seun Adeyemi', handle:'@seun_finance', initials:'SA', gradient:GRADIENT_PALETTES[3],
+    content:'The narrative that Africa is "behind" in fintech is outdated. M-Pesa launched in 2007. Nigeria processes more real-time payments than most of Europe. The next wave of global fintech innovation is coming from here. Thread 🧵',
+    time:'12h', likes:1240, comments:203, shares:687, bookmarks:421, liked:true, bookmarked:true
+  },
+  {
+    id:6, userId:7, name:'Fatima Hassan', handle:'@fatima_codes', initials:'FH', gradient:GRADIENT_PALETTES[7],
+    content:'Interview tip: when asked "tell me about a challenging project," don\'t just describe the technical problem. Describe how you navigated ambiguity, realigned stakeholders, and shipped anyway. That\'s what separates seniors from juniors.',
+    time:'1d', likes:673, comments:94, shares:312, bookmarks:198, liked:false, bookmarked:false
+  },
+];
+
+const COMMENTS_DATA = [
+  { name:'Kofi Mensah', initials:'KM', gradient:GRADIENT_PALETTES[1], time:'1h', text:'This is exactly what we need. Congrats on the round, Emeka! 🙌' },
+  { name:'Aisha Diallo', initials:'AD', gradient:GRADIENT_PALETTES[6], time:'1h 30m', text:'The 8% fee is insane. I send money home every month and it hurts. Rooting for you!' },
+  { name:'David Kamau', initials:'DK', gradient:GRADIENT_PALETTES[0], time:'2h', text:'Would love to chat about expanding to East Africa. DM me when you have a moment!' },
+  { name:'Amara Toure', initials:'AT', gradient:GRADIENT_PALETTES[2], time:'3h', text:'Incredible milestone. The diaspora market alone is massive — great timing.' },
+];
+
+const NOTIFICATIONS = [
+  { type:'like', icon:'♥', text:'<strong>Kofi Mensah</strong> and <strong>28 others</strong> liked your post about mobile payment infrastructure.', time:'2m', unread:true },
+  { type:'follow', icon:'＋', text:'<strong>Aisha Diallo</strong> started following you.', time:'15m', unread:true },
+  { type:'comment', icon:'💬', text:'<strong>Emeka Obi</strong> replied to your comment: "Exactly! The data confirms this..."', time:'1h', unread:true },
+  { type:'like', icon:'♥', text:'<strong>Seun Adeyemi</strong> liked your reply on the fintech thread.', time:'3h', unread:false },
+  { type:'follow', icon:'＋', text:'<strong>Zara Nkosi</strong> started following you.', time:'5h', unread:false },
+  { type:'comment', icon:'💬', text:'<strong>Fatima Hassan</strong> mentioned you in a comment: "...as @florence noted..."', time:'8h', unread:false },
+];
+
+/* ─── STATE ─────────────────────────────────────────── */
+let posts = [...POSTS];
+let followingState = {};
+let currentScreen = 'feed';
+
+/* ─── AVATAR HELPER ─────────────────────────────────── */
+function avatarHTML(initials, gradient, size='avatar-40') {
+  return `<div class="avatar ${size}" style="background:${gradient}">${initials}</div>`;
+}
+
+/* ─── FORMAT NUMBER ─────────────────────────────────── */
+function fmtNum(n) {
+  if (n >= 1000) return (n/1000).toFixed(n >= 10000 ? 0 : 1) + 'K';
+  return n;
+}
+
+/* ─── RENDER FEED ───────────────────────────────────── */
+function renderFeed() {
+  const el = document.getElementById('feed-list');
+  el.innerHTML = posts.map(p => renderPostCard(p)).join('');
+}
+
+function renderPostCard(p) {
+  return `
+  <article class="post-card" id="post-${p.id}">
+    ${avatarHTML(p.initials, p.gradient)}
+    <div class="post-body">
+      <div class="post-header">
+        <span class="post-name">${p.name}</span>
+        <span class="post-handle">${p.handle}</span>
+        <span class="post-dot">·</span>
+        <span class="post-time">${p.time}</span>
+      </div>
+      <div class="post-content" onclick="openPost(${p.id})" style="cursor:pointer">${p.content}</div>
+      <div class="post-actions">
+        <button class="post-action ${p.liked?'liked':''}" onclick="toggleLike(${p.id})">
+          ${p.liked
+            ? '<svg width="17" height="17" viewBox="0 0 24 24" fill="#E03535"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>'
+            : '<svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>'
+          }
+          ${fmtNum(p.likes)}
+        </button>
+        <button class="post-action" onclick="toggleComments(${p.id})">
+          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          ${fmtNum(p.comments)}
+        </button>
+        <button class="post-action">
+          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="17,1 21,5 17,9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7,23 3,19 7,15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+          ${fmtNum(p.shares)}
+        </button>
+        <button class="post-action ${p.bookmarked?'bookmarked':''}" onclick="toggleBookmark(${p.id})" style="margin-left:auto;min-width:auto">
+          ${p.bookmarked
+            ? '<svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>'
+            : '<svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>'
+          }
+        </button>
+      </div>
+      <div class="comments-section" id="comments-${p.id}">
+        ${COMMENTS_DATA.slice(0,2).map(c => `
+          <div class="comment-item">
+            ${avatarHTML(c.initials, c.gradient, 'avatar-32')}
+            <div class="comment-body">
+              <div class="comment-header">
+                <span class="comment-name">${c.name}</span>
+                <span class="comment-time">${c.time}</span>
+              </div>
+              <div class="comment-text">${c.text}</div>
+            </div>
+          </div>
+        `).join('')}
+        <div class="comment-input-row">
+          ${avatarHTML('FO', GRADIENT_PALETTES[0], 'avatar-32')}
+          <input class="comment-input" placeholder="Write a comment..." onkeydown="if(event.key==='Enter'){addComment(${p.id},this)}">
+          <button class="comment-submit" onclick="addComment(${p.id},this.previousElementSibling)">Reply</button>
+        </div>
+      </div>
+    </div>
+  </article>`;
+}
+
+/* ─── INTERACTIONS ──────────────────────────────────── */
+function toggleLike(id) {
+  const p = posts.find(x => x.id === id);
+  if (!p) return;
+  p.liked = !p.liked;
+  p.likes += p.liked ? 1 : -1;
+  renderFeed();
+}
+
+function toggleBookmark(id) {
+  const p = posts.find(x => x.id === id);
+  if (!p) return;
+  p.bookmarked = !p.bookmarked;
+  renderFeed();
+}
+
+function toggleComments(id) {
+  const el = document.getElementById(`comments-${id}`);
+  if (el) el.classList.toggle('open');
+}
+
+function addComment(postId, input) {
+  const text = input.value.trim();
+  if (!text) return;
+  const section = document.getElementById(`comments-${postId}`);
+  const newComment = document.createElement('div');
+  newComment.className = 'comment-item';
+  newComment.style.animation = 'fadeSlide 0.3s ease';
+  newComment.innerHTML = `
+    ${avatarHTML('FO', GRADIENT_PALETTES[0], 'avatar-32')}
+    <div class="comment-body">
+      <div class="comment-header">
+        <span class="comment-name">Florence Osei</span>
+        <span class="comment-time">just now</span>
+      </div>
+      <div class="comment-text">${text}</div>
+    </div>`;
+  section.insertBefore(newComment, section.querySelector('.comment-input-row'));
+  input.value = '';
+  const p = posts.find(x => x.id === postId);
+  if (p) p.comments++;
+}
+
+/* ─── COMPOSER ──────────────────────────────────────── */
+function updateComposer(el) {
+  const len = el.value.length;
+  document.getElementById('char-count').textContent = `${len} / 280`;
+  document.getElementById('post-btn').disabled = len === 0 || len > 280;
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+
+function submitPost() {
+  const ta = document.getElementById('composer-textarea');
+  const text = ta.value.trim();
+  if (!text) return;
+  const newPost = {
+    id: Date.now(), userId: 0,
+    name:'Florence Osei', handle:'@florence', initials:'FO', gradient:'linear-gradient(135deg,#FF6B35,#FF9A6C)',
+    content: text, time:'just now',
+    likes:0, comments:0, shares:0, bookmarks:0, liked:false, bookmarked:false
+  };
+  posts.unshift(newPost);
+  ta.value = '';
+  ta.style.height = 'auto';
+  document.getElementById('char-count').textContent = '0 / 280';
+  document.getElementById('post-btn').disabled = true;
+  renderFeed();
+}
+
+function focusComposer() {
+  switchScreen('feed');
+  setTimeout(() => document.getElementById('composer-textarea').focus(), 100);
+}
+
+/* ─── SINGLE POST ───────────────────────────────────── */
+function openPost(id) {
+  const p = posts.find(x => x.id === id) || POSTS.find(x => x.id === id);
+  if (!p) return;
+  const el = document.getElementById('single-post-content');
+  el.innerHTML = `
+    <div class="single-post-body">
+      <div class="single-post-header">
+        ${avatarHTML(p.initials, p.gradient, 'avatar-48')}
+        <div class="single-post-user-info">
+          <div class="name">${p.name}</div>
+          <div class="handle">${p.handle}</div>
+        </div>
+      </div>
+      <div class="single-post-content">${p.content}</div>
+      <div class="single-post-time">Posted ${p.time} ago</div>
+      <div class="single-post-stats">
+        <span class="single-stat"><strong>${fmtNum(p.likes)}</strong> Likes</span>
+        <span class="single-stat"><strong>${fmtNum(p.comments)}</strong> Comments</span>
+        <span class="single-stat"><strong>${fmtNum(p.shares)}</strong> Reposts</span>
+      </div>
+      <div class="single-post-actions">
+        <button class="post-action ${p.liked?'liked':''}" onclick="toggleLikeSingle(${p.id})">
+          <svg width="18" height="18" fill="${p.liked?'#E03535':'none'}" stroke="${p.liked?'#E03535':'currentColor'}" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          Like
+        </button>
+        <button class="post-action">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          Reply
+        </button>
+        <button class="post-action">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="17,1 21,5 17,9"/><path d="M3 11V9a4 4 0 014-4h14"/></svg>
+          Repost
+        </button>
+        <button class="post-action" style="margin-left:auto">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="reply-composer">
+      ${avatarHTML('FO', GRADIENT_PALETTES[0], 'avatar-40')}
+      <textarea placeholder="Post your reply…" rows="2"></textarea>
+      <button class="reply-btn">Reply</button>
+    </div>
+
+    <div class="comments-list">
+      ${COMMENTS_DATA.map(c => `
+        <div class="comment-card">
+          ${avatarHTML(c.initials, c.gradient, 'avatar-40')}
+          <div style="flex:1">
+            <div class="comment-header" style="margin-bottom:4px">
+              <span class="comment-name" style="font-size:15px;font-weight:600">${c.name}</span>
+              <span class="comment-time" style="font-size:13px;margin-left:6px">${c.time} ago</span>
+            </div>
+            <div style="font-size:15px;color:var(--text-2);line-height:1.6">${c.text}</div>
+            <div class="post-actions" style="margin-top:10px">
+              <button class="post-action">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+                12
+              </button>
+              <button class="post-action">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                Reply
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  switchScreen('single');
+}
+
+function toggleLikeSingle(id) {
+  toggleLike(id);
+  openPost(id);
+}
+
+/* ─── DISCOVER ──────────────────────────────────────── */
+function renderDiscover(query='') {
+  const filtered = USERS.filter(u =>
+    u.name.toLowerCase().includes(query.toLowerCase()) ||
+    u.handle.toLowerCase().includes(query.toLowerCase()) ||
+    u.bio.toLowerCase().includes(query.toLowerCase())
+  );
+  document.getElementById('discover-grid').innerHTML = filtered.map(u => `
+    <div class="user-card">
+      ${avatarHTML(u.initials, u.gradient, 'avatar-48')}
+      <div class="user-card-name">${u.name}</div>
+      <div class="user-card-handle">${u.handle}</div>
+      <div class="user-card-bio">${u.bio}</div>
+      <div class="user-card-stats">
+        <div>
+          <div class="user-card-stat-num">${fmtNum(u.followers)}</div>
+          <div class="user-card-stat-label">Followers</div>
+        </div>
+        <div>
+          <div class="user-card-stat-num">${fmtNum(u.following)}</div>
+          <div class="user-card-stat-label">Following</div>
+        </div>
+      </div>
+      <button class="follow-btn ${followingState[u.id]?'following':''}" onclick="toggleFollow(${u.id},this)">
+        ${followingState[u.id] ? '✓ Following' : '+ Follow'}
+      </button>
+    </div>
+  `).join('');
+}
+
+function filterUsers(q) { renderDiscover(q); }
+
+function toggleFollow(id, btn) {
+  followingState[id] = !followingState[id];
+  btn.classList.toggle('following', followingState[id]);
+  btn.textContent = followingState[id] ? '✓ Following' : '+ Follow';
+  renderRSidebar();
+}
+
+/* ─── RIGHT SIDEBAR ─────────────────────────────────── */
+function renderRSidebar() {
+  const suggestions = USERS.slice(0, 4);
+  document.getElementById('rsidebar-suggestions').innerHTML = suggestions.map(u => `
+    <div class="suggest-user">
+      ${avatarHTML(u.initials, u.gradient, 'avatar-40')}
+      <div class="suggest-info">
+        <div class="suggest-name">${u.name}</div>
+        <div class="suggest-handle">${u.handle}</div>
+      </div>
+      <button class="follow-btn ${followingState[u.id]?'following':''}" onclick="toggleFollow(${u.id},this)">
+        ${followingState[u.id] ? '✓' : 'Follow'}
+      </button>
+    </div>
+  `).join('');
+}
+
+/* ─── PROFILE ───────────────────────────────────────── */
+function renderProfile() {
+  document.getElementById('profile-posts').innerHTML = POSTS.slice(0,3).map(p => renderPostCard(p)).join('');
+}
+
+/* ─── NOTIFICATIONS ─────────────────────────────────── */
+function renderNotifications() {
+  document.getElementById('notif-list').innerHTML = NOTIFICATIONS.map(n => `
+    <div class="notif-item">
+      <div class="notif-icon ${n.type}">
+        ${n.type === 'like' ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>' : ''}
+        ${n.type === 'follow' ? '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' : ''}
+        ${n.type === 'comment' ? '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>' : ''}
+      </div>
+      <div style="flex:1">
+        <div class="notif-text">${n.text}</div>
+        <div class="notif-time">${n.time}</div>
+      </div>
+      ${n.unread ? '<div class="unread-dot"></div>' : ''}
+    </div>
+  `).join('');
+}
+
+/* ─── SCREEN SWITCHING ──────────────────────────────── */
+function switchScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.mobile-tab').forEach(t => t.classList.remove('active'));
+
+  const screen = document.getElementById(`screen-${name}`);
+  if (screen) screen.classList.add('active');
+
+  document.querySelectorAll(`[data-nav="${name}"]`).forEach(el => el.classList.add('active'));
+
+  currentScreen = name;
+
+  // Update header
+  const titles = { feed:'Feed', discover:'Discover', profile:'Profile', notifications:'Notifications', single:'Post' };
+  document.querySelectorAll('.main-header h1').forEach(el => el.textContent = titles[name] || name);
+
+  window.scrollTo(0, 0);
+}
+
+/* ─── THEME ─────────────────────────────────────────── */
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  const sun = document.getElementById('theme-sun');
+  const moon = document.getElementById('theme-moon');
+  const label = document.getElementById('theme-label');
+  const mIcon = document.getElementById('mobile-theme-icon');
+  if (isDark) {
+    sun.style.display = 'block'; moon.style.display = 'none';
+    label.textContent = 'Light mode';
+    if (mIcon) mIcon.textContent = '☀️';
+  } else {
+    sun.style.display = 'none'; moon.style.display = 'block';
+    label.textContent = 'Dark mode';
+    if (mIcon) mIcon.textContent = '🌙';
+  }
+}
+
+/* ─── INIT ───────────────────────────────────────────── */
+renderFeed();
+renderDiscover();
+renderProfile();
+renderNotifications();
+renderRSidebar();
+</script>
+</body>
+</html>
