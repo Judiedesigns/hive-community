@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hive — Community Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/iconoir@7.9.0/css/iconoir.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- MOBILE HEADER -->
+<div class="mobile-header">
+  <div class="sidebar-logo" style="margin:0">
+    <div class="logo-mark">
+      <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" fill="white"/></svg>
+    </div>
+    <span class="logo-text">Hive</span>
+  </div>
+  <button class="theme-toggle" onclick="toggleTheme()" style="width:auto;padding:8px 12px">
+    <span id="mobile-theme-icon">☀️</span>
+  </button>
+</div>
+
+<div class="app">
+  <!-- ── LEFT SIDEBAR ── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" fill="white"/></svg>
+      </div>
+      <span class="logo-text">Hive</span>
+    </div>
+
+    <button class="nav-item active" data-nav="feed" onclick="switchScreen('feed')">
+      <i class="iconoir-home" style="font-size:20px"></i>
+      Feed
+    </button>
+    <button class="nav-item" data-nav="discover" onclick="switchScreen('discover')">
+      <i class="iconoir-search" style="font-size:20px"></i>
+      Discover
+    </button>
+    <button class="nav-item" data-nav="profile" onclick="switchScreen('profile')">
+      <i class="iconoir-user" style="font-size:20px"></i>
+      Profile
+    </button>
+    <button class="nav-item" data-nav="notifications" onclick="switchScreen('notifications')">
+      <i class="iconoir-bell" style="font-size:20px"></i>
+      Notifications
+      <span class="badge">3</span>
+    </button>
+    <button class="nav-item" data-nav="saved" onclick="switchScreen('saved')">
+      <i class="iconoir-bookmark" style="font-size:20px"></i>
+      Saved
+    </button>
+    <button class="nav-item" data-nav="settings" onclick="switchScreen('settings')">
+      <i class="iconoir-settings" style="font-size:20px"></i>
+      Settings
+    </button>
+
+    <div class="sidebar-spacer"></div>
+
+    <button class="new-post-btn" onclick="focusComposer()">New Post</button>
+
+    <button class="theme-toggle" onclick="toggleTheme()">
+      <i id="theme-sun" class="iconoir-sun-light" style="font-size:16px"></i>
+      <i id="theme-moon" class="iconoir-half-moon" style="font-size:16px;display:none"></i>
+      <span id="theme-label">Light mode</span>
+      <div class="toggle-track"><div class="toggle-thumb"></div></div>
+    </button>
+
+    <div class="sidebar-user" onclick="switchScreen('profile')">
+      <img src="https://i.pravatar.cc/150?img=47" class="avatar avatar-40" alt="FO" loading="lazy">
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name">Florence Osei</div>
+        <div class="sidebar-user-handle">@florence</div>
+      </div>
+      <i class="iconoir-more-horiz" style="font-size:16px"></i>
+    </div>
+  </aside>
+
+  <!-- ── MAIN CONTENT ── -->
+  <main class="main">
+
+    <!-- FEED SCREEN -->
+    <div id="screen-feed" class="screen active">
+      <div class="main-header">
+        <h1>Feed</h1>
+      </div>
+      <div class="feed-tabs">
+        <div class="feed-tab active" onclick="switchFeedTab(this)">For You</div>
+        <div class="feed-tab" onclick="switchFeedTab(this)">Following</div>
+      </div>
+      <div class="composer">
+        <img src="https://i.pravatar.cc/150?img=47" class="avatar avatar-40" alt="FO" loading="lazy">
+        <div class="composer-body">
+          <textarea id="composer-textarea" placeholder="What's on your mind?" rows="2" oninput="updateComposer(this)"></textarea>
+          <div id="composer-img-preview" style="display:none;position:relative;margin-bottom:10px;">
+            <img id="composer-img-preview-img" style="width:100%;max-height:260px;object-fit:cover;border-radius:var(--r-md);display:block;" alt="">
+            <button onclick="removeComposerImage()" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.6);color:#fff;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;line-height:1;">×</button>
+          </div>
+          <input type="file" id="composer-img-input" accept="image/*" style="display:none" onchange="handleComposerImage(this)">
+          <div class="composer-footer">
+            <div class="composer-actions" style="position:relative;">
+              <button class="composer-action" title="Image" onclick="document.getElementById('composer-img-input').click()"><i class="iconoir-media-image" style="font-size:18px"></i></button>
+              <button class="composer-action" title="Link" onclick="insertComposerLink()"><i class="iconoir-link" style="font-size:18px"></i></button>
+              <div style="position:relative;">
+                <button class="composer-action" title="Emoji" onclick="toggleEmojiPicker(event)"><i class="iconoir-emoji" style="font-size:18px"></i></button>
+                <div id="emoji-picker" style="display:none;position:absolute;bottom:36px;left:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:10px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:100;display:none;flex-wrap:wrap;width:220px;gap:4px;">
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div class="progress-ring-wrap" id="progress-wrap" style="opacity:0;transition:opacity 0.2s">
+                <svg class="progress-ring" width="28" height="28" viewBox="0 0 28 28">
+                  <circle class="progress-ring-bg" cx="14" cy="14" r="11"/>
+                  <circle class="progress-ring-fill" id="progress-fill" cx="14" cy="14" r="11" stroke-dasharray="69.115" stroke-dashoffset="69.115"/>
+                </svg>
+                <span class="progress-ring-label" id="progress-label"></span>
+              </div>
+              <button class="post-btn" id="post-btn" onclick="submitPost()" disabled>Post</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="feed-list"></div>
+    </div>
+
+    <!-- DISCOVER SCREEN -->
+    <div id="screen-discover" class="screen">
+      <div class="main-header"><h1>Discover</h1></div>
+      <div class="discover-search">
+        <div class="search-input-wrap">
+          <i class="iconoir-search" style="font-size:18px;position:absolute;left:14px;color:var(--text-3);pointer-events:none"></i>
+          <input type="text" class="search-input" placeholder="Search posts, topics, people..." oninput="filterUsers(this.value)">
+        </div>
+      </div>
+      <div class="filter-pills">
+        <div class="pill active" onclick="switchPill(this)">All</div>
+        <div class="pill" onclick="switchPill(this)">Fintech</div>
+        <div class="pill" onclick="switchPill(this)">Design</div>
+        <div class="pill" onclick="switchPill(this)">Dev</div>
+        <div class="pill" onclick="switchPill(this)">Founders</div>
+        <div class="pill" onclick="switchPill(this)">Photography</div>
+        <div class="pill" onclick="switchPill(this)">Writing</div>
+        <div class="pill" onclick="switchPill(this)">East Africa</div>
+        <div class="pill" onclick="switchPill(this)">West Africa</div>
+      </div>
+      <div class="discover-grid" id="discover-grid"></div>
+    </div>
+
+    <!-- PROFILE SCREEN -->
+    <div id="screen-profile" class="screen">
+      <div class="profile-cover"></div>
+      <div class="profile-info">
+        <div class="profile-avatar-wrap">
+          <div class="profile-avatar-border">
+            <img src="https://i.pravatar.cc/150?img=47" class="avatar avatar-96" alt="FO" loading="lazy">
+          </div>
+          <button class="edit-profile-btn" onclick="showEditProfileModal()">Edit Profile</button>
+        </div>
+        <div class="profile-name">Florence Osei</div>
+        <div class="profile-handle">@florence · Joined March 2024</div>
+        <div class="profile-bio">Product designer & community builder. Passionate about fintech for Africa 🌍. Building things at the intersection of design and impact.</div>
+        <div class="profile-meta">
+          <span class="profile-meta-item"><i class="iconoir-map-pin" style="font-size:14px"></i> Accra, Ghana</span>
+          <span class="profile-meta-item"><i class="iconoir-link" style="font-size:14px"></i> florence.design</span>
+        </div>
+        <div class="profile-stats">
+          <div class="stat-item"><div class="stat-num">284</div><div class="stat-label">Posts</div></div>
+          <div class="stat-item"><div class="stat-num">4.2K</div><div class="stat-label">Followers</div></div>
+          <div class="stat-item"><div class="stat-num" id="profile-following-num">318</div><div class="stat-label">Following</div></div>
+        </div>
+      </div>
+      <div class="profile-tabs">
+        <div class="profile-tab active">Posts</div>
+        <div class="profile-tab">Replies</div>
+        <div class="profile-tab">Likes</div>
+      </div>
+      <div class="profile-posts" id="profile-posts"></div>
+    </div>
+
+    <!-- NOTIFICATIONS SCREEN -->
+    <div id="screen-notifications" class="screen">
+      <div class="main-header"><h1>Notifications</h1></div>
+      <div class="notif-screen" id="notif-list"></div>
+    </div>
+
+    <!-- SINGLE POST SCREEN -->
+    <div id="screen-single" class="screen">
+      <div class="main-header"><h1>Post</h1></div>
+      <div class="single-post-back" onclick="switchScreen('feed')">
+        <i class="iconoir-arrow-left" style="font-size:18px"></i>
+        Back to Feed
+      </div>
+      <div id="single-post-content"></div>
+    </div>
+
+    <!-- SETTINGS SCREEN -->
+    <!-- SAVED SCREEN -->
+    <div id="screen-saved" class="screen">
+      <div class="main-header"><h1>Saved</h1></div>
+      <div id="saved-list"></div>
+    </div>
+
+    <div id="screen-settings" class="screen">
+      <div class="main-header"><h1>Settings</h1></div>
+      <div class="settings-layout">
+
+        <!-- Settings nav -->
+        <nav class="settings-nav">
+          <button class="settings-nav-item active" onclick="switchSettingsSection(this,'account')">
+            <i class="iconoir-user" style="font-size:15px"></i> Account
+          </button>
+          <button class="settings-nav-item" onclick="switchSettingsSection(this,'privacy')">
+            <i class="iconoir-shield-check" style="font-size:15px"></i> Privacy
+          </button>
+          <button class="settings-nav-item" onclick="switchSettingsSection(this,'notifications')">
+            <i class="iconoir-bell" style="font-size:15px"></i> Notifications
+          </button>
+          <div class="settings-nav-divider"></div>
+          <button class="settings-nav-item" onclick="switchSettingsSection(this,'appearance')">
+            <i class="iconoir-half-moon" style="font-size:15px"></i> Appearance
+          </button>
+          <button class="settings-nav-item" onclick="switchSettingsSection(this,'content')">
+            <i class="iconoir-sparks" style="font-size:15px"></i> Content
+          </button>
+          <div class="settings-nav-divider"></div>
+          <button class="settings-nav-item" onclick="switchSettingsSection(this,'security')">
+            <i class="iconoir-lock" style="font-size:15px"></i> Security
+          </button>
+        </nav>
+
+        <!-- Settings content -->
+        <div class="settings-content">
+
+          <!-- ── ACCOUNT ── -->
+          <div id="settings-account" class="settings-section active">
+            <div class="settings-section-title">Account</div>
+            <div class="settings-section-desc">Manage your public profile and personal information.</div>
+
+            <div class="settings-avatar-row">
+              <img id="s-avatar-img" src="https://i.pravatar.cc/150?img=47" class="avatar avatar-96" alt="FO" loading="lazy">
+              <div class="settings-avatar-info">
+                <div class="settings-avatar-name" id="s-avatar-name">Florence Osei</div>
+                <div class="settings-avatar-handle" id="s-avatar-handle">@florence</div>
+                <div class="settings-avatar-actions">
+                  <button class="btn-upload">Change photo</button>
+                  <button class="btn-remove-photo">Remove</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-group">
+              <div class="settings-group-label">Profile Info</div>
+              <div class="settings-field">
+                <label>Display name</label>
+                <input id="s-name" type="text" placeholder="Your name">
+              </div>
+              <div class="settings-field">
+                <label>Username</label>
+                <input type="text" value="@florence" placeholder="@handle">
+              </div>
+              <div class="settings-field">
+                <label>Bio</label>
+                <textarea id="s-bio" rows="3" placeholder="Tell people about yourself"></textarea>
+              </div>
+              <div class="settings-field">
+                <label>Location</label>
+                <input id="s-location" type="text" placeholder="Where are you based?">
+              </div>
+              <div class="settings-field">
+                <label>Website</label>
+                <input id="s-website" type="text" placeholder="yourwebsite.com">
+              </div>
+            </div>
+
+            <div class="settings-group">
+              <div class="settings-group-label">Contact</div>
+              <div class="settings-field">
+                <label>Email address</label>
+                <input type="email" value="florence@hive.app" placeholder="you@example.com">
+              </div>
+              <div class="settings-field">
+                <label>Phone number</label>
+                <input type="tel" placeholder="+233 XX XXX XXXX">
+              </div>
+            </div>
+
+            <button class="settings-save-btn" onclick="saveAccountSettings()">Save changes</button>
+          </div>
+
+          <!-- ── PRIVACY ── -->
+          <div id="settings-privacy" class="settings-section">
+            <div class="settings-section-title">Privacy & Safety</div>
+            <div class="settings-section-desc">Control who can see your content and interact with you.</div>
+
+            <div class="settings-group">
+              <div class="settings-group-label">Account visibility</div>
+              <div class="settings-radio-group">
+                <div class="settings-radio-item selected" onclick="selectRadio(this)">
+                  <input type="radio" name="visibility" checked>
+                  <div>
+                    <div class="settings-radio-label">Public account</div>
+                    <div class="settings-radio-desc">Anyone can see your posts and follow you.</div>
+                  </div>
+                </div>
+                <div class="settings-radio-item" onclick="selectRadio(this)">
+                  <input type="radio" name="visibility">
+                  <div>
+                    <div class="settings-radio-label">Private account</div>
+                    <div class="settings-radio-desc">Only approved followers see your posts.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-group">
+              <div class="settings-group-label">Interactions</div>
+
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">Who can reply to your posts</div>
+                </div>
+                <select style="width:auto;padding:7px 12px;font-size:13px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-md);color:var(--text-1);cursor:pointer;outline:none">
+                  <option>Everyone</option>
+                  <option>People you follow</option>
+                  <option>Only you</option>
+                </select>
+              </div>
+
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">Who can send you direct messages</div>
+                </div>
+                <select style="width:auto;padding:7px 12px;font-size:13px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-md);color:var(--text-1);cursor:pointer;outline:none">
+                  <option>Everyone</option>
+                  <option selected>People you follow</option>
+                  <option>No one</option>
+                </select>
+              </div>
+
+              <div class="settings-row">
+                <div class="settings-row-left">
+                  <div class="settings-row-label">Allow tagging in posts</div>
+                  <div class="settings-row-sublabel">Others can mention or tag you in their posts.</div>
+                </div>
+                <label class="s-toggle">
+                  <input type="checkbox" checked>
+                  <span class="s-toggle-track"></span>
+                </label>
+              </div>
+
+              <div class="settings-row">
+                <div class="settings-row-left">
+                  <div class="settings-row-label">Show followers list publicly</div>
+                  <div class="settings-row-sublabel">Anyone can see who follows you.</div>
+                </div>
+                <label class="s-toggle">
+                  <input type="checkbox" checked>
+                  <span class="s-toggle-track"></span>
+                </label>
+              </div>
+
+              <div class="settings-row">
+                <div class="settings-row-left">
+                  <div class="settings-row-label">Show activity status</div>
+                  <div class="settings-row-sublabel">Let others see when you're active.</div>
+                </div>
+                <label class="s-toggle">
+                  <input type="checkbox">
+                  <span class="s-toggle-track"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="settings-group">
+              <div class="settings-group-label">Data & Personalization</div>
+              <div class="settings-row">
+                <div class="settings-row-left">
+                  <div class="settings-row-label">Personalised ads</div>
+                  <div class="settings-row-sublabel">Use your activity to show relevant ads.</div>
+                </div>
+                <label class="s-toggle">
+                  <input type="checkbox" checked>
+                  <span class="s-toggle-track"></span>
+                </label>
+              </div>
+              <div class="settings-row">
+                <div class="settings-row-left">
+                  <div class="settings-row-label">Share data with partners</div>
+                  <div class="settings-row-sublabel">Help improve experiences across platforms.</div>
+                </div>
+                <label class="s-toggle">
+                  <input type="checkbox">
+                  <span class="s-toggle-track"></span>
+                </label>
+              </div>
+            </div>
+
+            <button class="settings-save-btn" onclick="savePrivacySettings()">Save changes</button>
+          </div>
+
+          <!-- ── NOTIFICATIONS ── -->
+          <div id="settings-notifications" class="settings-section">
+            <div class="settings-section-title">Notifications</div>
+            <div class="settings-section-desc">Choose what you're notified about and how.</div>
+
+            <div class="settings-group">
+              <div class="settings-group-label">Channels</div>
+              <div class="settings-row">
+                <div class="settings-row-left">
+                  <div class="settings-row-label">Push notifications</div>
+                  <div class="settings-row-sublabel">Notify me on this device.</div>
+                </div>
+                <label class="s-toggle">
+                  <input type="checkbox" checked>
+                  <span class="s-toggle-track"></span>
+                </label>
+              </div>
+              <div class="settings-row">
+                <div class="settings-row-left">
+                  <div class="settings-row-label">Email notifications</div>
+                  <div class="settings-row-sublabel">florence@hive.app</div>
+                </div>
+                <label class="s-toggle">
+                  <input type="checkbox" checked>
+                  <span class="s-toggle-track"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="settings-group">
+              <div class="settings-group-label">Activity</div>
+              <table class="notif-matrix">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Push</th>
+                    <th>Email</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Likes on your posts</td>
+                    <td><label class="s-toggle"><input type="checkbox" checked><span class="s-toggle-track"></span></label></td>
+                    <td><label class="s-toggle"><input type="checkbox"><span class="s-toggle-track"></span></label></td>
+                  </tr>
+                  <tr>
+                    <td>Comments on your posts</td>
+                    <td><label class="s-toggle"><input type="checkbox" checked><span class="s-toggle-track"></span></label></td>
+                    <td><label class="s-toggle"><input type="checkbox" checked><span class="s-toggle-track"></span></label></td>
+                  </tr>
+                  <tr>
+                    <td>New followers</td>
+                    <td><label class="s-toggle"><input type="checkbox" checked><span class="s-toggle-track"></span></label></td>
+                    <td><label class="s-toggle"><input type="checkbox"><span class="s-toggle-track"></span></label></td>
+                  </tr>
+                  <tr>
+                    <td>Reposts of your content</td>
+                    <td><label class="s-toggle"><input type="checkbox" checked><span class="s-toggle-track"></span></label></td>
+                    <td><label class="s-toggle"><input type="checkbox"><span class="s-toggle-track"></span></label></td>
+                  </tr>
+                  <tr>
+                    <td>Mentions & tags</td>
+                    <td><label class="s-toggle"><input type="checkbox" checked><span class="s-toggle-track"></span></label></td>
+                    <td><label class="s-toggle"><input type="checkbox" checked><span class="s-toggle-track"></span></label></td>
+                  </tr>
+                  <tr>
+                    <td>Direct messages</td>
+                    <td><label class="s-toggle"><input type="checkbox" checked><span class="s-toggle-track"></span></label></td>
+                    <td><label class="s-toggle"><input type="checkbox"><span class="s-toggle-track"></span></label></td>
+                  </tr>
+                  <tr>
+                    <td>Hive announcements</td>
+                    <td><label class="s-toggle"><input type="checkbox"><span class="s-toggle-track"></span></label></td>
+                    <td><label class="s-toggle"><input type="checkbox" checked><span class="s-toggle-track"></span></label></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <button class="settings-save-btn" onclick="saveNotifSettings()">Save changes</button>
+          </div>
+
+          <!-- ── APPEARANCE ── -->
+          <div id="settings-appearance" class="settings-section">
+            <div class="settings-section-title">Appearance</div>
+            <div class="settings-section-desc">Customise how Hive looks and feels for you.</div>
+
+            <div class="settings-group">
+              <div class="settings-group-label">Theme</div>
+              <div class="theme-cards">
+                <div class="theme-card selected" data-theme="light" onclick="selectThemeCard(this,'light')">
+                  <div class="theme-card-preview theme-card-preview-light">
+                    <div style="width:70%;height:8px;background:#1A1A1A;border-radius:4px;opacity:.2"></div>
+                  </div>
+                  <div class="theme-card-label">Light</div>
+                </div>
+                <div class="theme-card" data-theme="dark" onclick="selectThemeCard(this,'dark')">
+                  <div class="theme-card-preview theme-card-preview-dark">
+                    <div style="width:70%;height:8px;background:#818CF8;border-radius:4px;opacity:.5"></div>
+                  </div>
+                  <div class="theme-card-label">Dark</div>
+                </div>
+                <div class="theme-card" data-theme="system" onclick="selectThemeCard(this,'system')">
+                  <div class="theme-card-preview theme-card-preview-system"></div>
+                  <div class="theme-card-label">System</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-group">
+              <div class="settings-group-label">Font size</div>
+              <div class="font-size-row">
+                <button class="font-size-btn" data-size="small" onclick="selectFontSize(this)" style="font-size:12px">Small</button>
+                <button class="font-size-btn selected" data-size="normal" onclick="selectFontSize(this)" style="font-size:14px">Normal</button>
+                <button class="font-size-btn" data-size="large" onclick="selectFontSize(this)" style="font-size:16px">Large</button>
+              </div>
+            </div>
+
+            <div class="settings-group">
+              <div class="settings-group-label">Language</div>
+              <div class="settings-field">
+                <select>
+                  <option selected>English (US)</option>
+                  <option>English (UK)</option>
+                  <option>French</option>
+                  <option>Swahili</option>
+                  <option>Hausa</option>
+                  <option>Yoruba</option>
+                  <option>Igbo</option>
+                  <option>Amharic</option>
+                  <option>Zulu</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="settings-group">
+              <div class="settings-group-label">Reduce motion</div>
+              <div class="settings-row">
+                <div class="settings-row-left">
+                  <div class="settings-row-label">Reduce animations</div>
+                  <div class="settings-row-sublabel">Minimise movement in the interface.</div>
+                </div>
+                <label class="s-toggle">
+                  <input type="checkbox">
+                  <span class="s-toggle-track"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── CONTENT ── -->
+          <div id="settings-content" class="settings-section">
+            <div class="settings-section-title">Content Preferences</div>
+            <div class="settings-section-desc">Tell us what you're interested in to personalise your feed.</div>
+
+            <div class="settings-group">
+              <div class="settings-group-label">Topics you follow</div>
+              <div class="interest-grid">
+                <div class="interest-chip selected" onclick="toggleInterest(this)">Fintech</div>
+                <div class="interest-chip selected" onclick="toggleInterest(this)">Design</div>
+                <div class="interest-chip selected" onclick="toggleInterest(this)">Dev</div>
+                <div class="interest-chip" onclick="toggleInterest(this)">Founders</div>
+                <div class="interest-chip" onclick="toggleInterest(this)">Photography</div>
+                <div class="interest-chip selected" onclick="toggleInterest(this)">Writing</div>
+                <div class="interest-chip selected" onclick="toggleInterest(this)">East Africa</div>
+                <div class="interest-chip selected" onclick="toggleInterest(this)">West Africa</div>
+                <div class="interest-chip" onclick="toggleInterest(this)">Startups</div>
+                <div class="interest-chip" onclick="toggleInterest(this)">Open Source</div>
+                <div class="interest-chip" onclick="toggleInterest(this)">Product</div>
+                <div class="interest-chip" onclick="toggleInterest(this)">Marketing</div>
+                <div class="interest-chip" onclick="toggleInterest(this)">Climate</div>
+                <div class="interest-chip" onclick="toggleInterest(this)">Education</div>
+                <div class="interest-chip" onclick="toggleInterest(this)">Health</div>
+                <div class="interest-chip" onclick="toggleInterest(this)">Music</div>
+                <div class="interest-chip" onclick="toggleInterest(this)">Art</div>
+                <div class="interest-chip" onclick="toggleInterest(this)">Sports</div>
+              </div>
+            </div>
+
+            <div class="settings-group">
+              <div class="settings-group-label">Feed filters</div>
+              <div class="settings-row">
+                <div class="settings-row-left">
+                  <div class="settings-row-label">Filter sensitive content</div>
+                  <div class="settings-row-sublabel">Hide posts flagged as potentially sensitive.</div>
+                </div>
+                <label class="s-toggle">
+                  <input type="checkbox" checked>
+                  <span class="s-toggle-track"></span>
+                </label>
+              </div>
+              <div class="settings-row">
+                <div class="settings-row-left">
+                  <div class="settings-row-label">Show reposts in feed</div>
+                  <div class="settings-row-sublabel">Display content that others have reposted.</div>
+                </div>
+                <label class="s-toggle">
+                  <input type="checkbox" checked>
+                  <span class="s-toggle-track"></span>
+                </label>
+              </div>
+              <div class="settings-row">
+                <div class="settings-row-left">
+                  <div class="settings-row-label">Show suggested accounts</div>
+                  <div class="settings-row-sublabel">See recommendations in your feed.</div>
+                </div>
+                <label class="s-toggle">
+                  <input type="checkbox" checked>
+                  <span class="s-toggle-track"></span>
+                </label>
+              </div>
+            </div>
+
+            <button class="settings-save-btn" onclick="saveContentSettings()">Save changes</button>
+          </div>
+
+          <!-- ── SECURITY ── -->
+          <div id="settings-security" class="settings-section">
+            <div class="settings-section-title">Security</div>
+            <div class="settings-section-desc">Keep your account safe and review active sessions.</div>
+
+            <div class="settings-group">
+              <div class="settings-group-label">Change password</div>
+              <div class="settings-field">
+                <label>Current password</label>
+                <div class="settings-pw-wrap">
+                  <input id="s-pw-current" type="password" placeholder="Enter current password">
+                  <button class="settings-pw-eye" onclick="togglePwVisibility('s-pw-current',this)" type="button">
+                    <i class="iconoir-eye" style="font-size:17px"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="settings-field">
+                <label>New password</label>
+                <div class="settings-pw-wrap">
+                  <input id="s-pw-new" type="password" placeholder="At least 8 characters">
+                  <button class="settings-pw-eye" onclick="togglePwVisibility('s-pw-new',this)" type="button">
+                    <i class="iconoir-eye" style="font-size:17px"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="settings-field">
+                <label>Confirm new password</label>
+                <div class="settings-pw-wrap">
+                  <input id="s-pw-confirm" type="password" placeholder="Repeat new password">
+                  <button class="settings-pw-eye" onclick="togglePwVisibility('s-pw-confirm',this)" type="button">
+                    <i class="iconoir-eye" style="font-size:17px"></i>
+                  </button>
+                </div>
+              </div>
+              <button class="settings-save-btn" onclick="savePasswordSettings()">Update password</button>
+            </div>
+
+            <div class="settings-group">
+              <div class="settings-group-label">Two-factor authentication</div>
+              <div class="settings-row">
+                <div class="settings-row-left">
+                  <div class="settings-row-label">Authenticator app</div>
+                  <div class="settings-row-sublabel">Use an app like Google Authenticator for extra security.</div>
+                </div>
+                <label class="s-toggle">
+                  <input type="checkbox">
+                  <span class="s-toggle-track"></span>
+                </label>
+              </div>
+              <div class="settings-row">
+                <div class="settings-row-left">
+                  <div class="settings-row-label">SMS verification</div>
+                  <div class="settings-row-sublabel">Receive a code by text when signing in.</div>
+                </div>
+                <label class="s-toggle">
+                  <input type="checkbox" checked>
+                  <span class="s-toggle-track"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="settings-group">
+              <div class="settings-group-label">Active sessions</div>
+
+              <div class="session-item">
+                <div class="session-icon"><i class="iconoir-laptop" style="font-size:18px"></i></div>
+                <div style="flex:1">
+                  <div class="session-device">MacBook Pro <span class="session-current">Current</span></div>
+                  <div class="session-meta">Accra, Ghana · Chrome · Active now</div>
+                </div>
+              </div>
+
+              <div class="session-item">
+                <div class="session-icon"><i class="iconoir-smartphone-device" style="font-size:18px"></i></div>
+                <div style="flex:1">
+                  <div class="session-device">iPhone 15 Pro</div>
+                  <div class="session-meta">Accra, Ghana · Safari · 2 hours ago</div>
+                </div>
+                <button class="btn-revoke" onclick="revokeSession(this)">Revoke</button>
+              </div>
+
+              <div class="session-item">
+                <div class="session-icon"><i class="iconoir-laptop" style="font-size:18px"></i></div>
+                <div style="flex:1">
+                  <div class="session-device">Windows PC</div>
+                  <div class="session-meta">Lagos, Nigeria · Firefox · 3 days ago</div>
+                </div>
+                <button class="btn-revoke" onclick="revokeSession(this)">Revoke</button>
+              </div>
+
+              <div class="session-item">
+                <div class="session-icon"><i class="iconoir-smartphone-device" style="font-size:18px"></i></div>
+                <div style="flex:1">
+                  <div class="session-device">Samsung Galaxy S24</div>
+                  <div class="session-meta">London, UK · Chrome · 6 days ago</div>
+                </div>
+                <button class="btn-revoke" onclick="revokeSession(this)">Revoke</button>
+              </div>
+            </div>
+
+            <div class="danger-zone">
+              <div class="danger-zone-title">Danger Zone</div>
+              <div class="danger-zone-desc">Deactivating your account will hide your profile and posts from Hive. Your data will be preserved for 30 days, after which it will be permanently deleted.</div>
+              <button class="btn-deactivate">Deactivate account</button>
+            </div>
+          </div>
+
+        </div><!-- /settings-content -->
+      </div><!-- /settings-layout -->
+    </div><!-- /screen-settings -->
+
+  </main>
+
+  <!-- ── RIGHT SIDEBAR ── -->
+  <aside class="rsidebar">
+    <div class="rsidebar-section">
+      <div class="rsidebar-title">Who to Follow</div>
+      <div id="rsidebar-suggestions"></div>
+      <span class="see-more" onclick="toggleSuggestions(this)">Show more</span>
+    </div>
+    <div class="rsidebar-section">
+      <div class="rsidebar-title">What's happening</div>
+      <div id="trending-list"></div>
+      <span class="see-more" onclick="toggleTrending(this)">Show more</span>
+    </div>
+    <div style="padding:8px 4px;font-size:12px;color:var(--text-3);line-height:1.8;">
+      Terms · Privacy · Cookies<br>
+      Accessibility · Ads info<br>
+      © 2026 Hive
+    </div>
+  </aside>
+</div>
+
+<!-- MOBILE TAB BAR -->
+<nav class="mobile-tab-bar">
+  <div class="mobile-tab active" data-nav="feed" onclick="switchScreen('feed')">
+    <i class="iconoir-home" style="font-size:22px"></i>
+    Feed
+  </div>
+  <div class="mobile-tab" data-nav="discover" onclick="switchScreen('discover')">
+    <i class="iconoir-search" style="font-size:22px"></i>
+    Discover
+  </div>
+  <div class="mobile-tab" data-nav="profile" onclick="switchScreen('profile')">
+    <i class="iconoir-user" style="font-size:22px"></i>
+    Profile
+  </div>
+  <div class="mobile-tab" data-nav="notifications" onclick="switchScreen('notifications')">
+    <i class="iconoir-bell" style="font-size:22px"></i>
+    Notifs
+  </div>
+  <div class="mobile-tab" data-nav="saved" onclick="switchScreen('saved')">
+    <i class="iconoir-bookmark" style="font-size:22px"></i>
+    Saved
+  </div>
+  <div class="mobile-tab" data-nav="settings" onclick="switchScreen('settings')">
+    <i class="iconoir-settings" style="font-size:22px"></i>
+    Settings
+  </div>
+</nav>
+
+<!-- MODALS -->
+<div class="modal-overlay hidden" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+
+  <div class="modal-box" id="modal-delete-post">
+    <div class="modal-title">Delete post?</div>
+    <div class="modal-body">This can't be undone and it will be removed from your profile, the timeline of any accounts that follow you, and from search results.</div>
+    <div class="modal-actions">
+      <button class="btn-danger" onclick="confirmDeletePost()">Delete</button>
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+
+  <div class="modal-box hidden" id="modal-edit-post" style="max-width:460px">
+    <div class="modal-title" style="margin-bottom:16px">Edit post</div>
+    <textarea class="modal-tarea" id="edit-post-textarea" rows="5"></textarea>
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="confirmEditPost()">Save</button>
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+
+  <div class="modal-box hidden" id="modal-edit-profile" style="max-width:420px">
+    <div class="modal-title" style="margin-bottom:20px">Edit Profile</div>
+    <div class="modal-label">Name</div>
+    <input class="modal-input" id="ep-name" type="text" placeholder="Your name">
+    <div class="modal-label">Bio</div>
+    <textarea class="modal-tarea" id="ep-bio" rows="3" placeholder="Tell people about yourself"></textarea>
+    <div class="modal-label">Location</div>
+    <input class="modal-input" id="ep-location" type="text" placeholder="Where are you based?">
+    <div class="modal-label">Website</div>
+    <input class="modal-input" id="ep-website" type="text" placeholder="yourwebsite.com">
+    <div class="modal-label">Avatar URL</div>
+    <input class="modal-input" id="ep-avatar" type="text" placeholder="https://...">
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="confirmEditProfile()">Save</button>
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div id="settings-toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
